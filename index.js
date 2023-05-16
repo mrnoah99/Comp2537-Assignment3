@@ -12,8 +12,8 @@ const paginate = async (currentPage, PAGE_SIZE, pokemons) => {
             <div class='pokecard card' pokeName=${response.data.name}>
                 <h3>${response.data.name.toUpperCase()}</h3>
                 <img src='${response.data.sprites.front_default}' alt='${response.data.name}'>
-                <button type='button' class='btn btn-primary' data-toggle='modal' data-target='#pokeModal'>
-                More...
+                <button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#pokeModal'>
+                    More...
                 </button>
             </div>
         `);
@@ -28,38 +28,40 @@ const setup = async () => {
     pokemons = response.data.results;
 
     paginate(currentPage, PAGE_SIZE, pokemons);
+    const numPages = Math.ceil(pokemons.length / PAGE_SIZE);
 
     $('body').on('click', '.pokecard', async function (e) {
         const pokemonName = $(this).attr('pokeName');
         const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
-        const types = res.data.types.map((type) => type.type.name);
-        $('modal-body').html(`
+        const types = response.data.types.map((type) => type.type.name);
+        $('.modal-body').html(`
             <div style='width: 200px;'>
-            <img src='${response.data.sprites.other['official-artwork'].front_default}' alt='${response.data.name}'>
+                <img src='${response.data.sprites.other['official-artwork'].front_default}' alt='${response.data.name}'>
                 <div>
-                <h3>Abilities</h3>
-                <ul>
-                ${res.data.abilities.map((ability) => `<li>${ability.ability.name}</li>`).join('')}
-                </ul>
+                    <h3>Abilities</h3>
+                    <ul>
+                        ${response.data.abilities.map((ability) => `<li>${ability.ability.name}</li>`).join('')}
+                    </ul>
                 </div>
             
                 <div>
-                <h3>Stats</h3>
-                <ul>
-                ${response.data.stats.map((stat) => `<li>${stat.stat.name}: ${stat.base_stat}</li>`).join('')}
-                </ul>
+                    <h3>Stats</h3>
+                    <ul>
+                        ${response.data.stats.map((stat) => `<li>${stat.stat.name}: ${stat.base_stat}</li>`).join('')}
+                    </ul>
                 </div>
             </div>
 
             <h3>Types</h3>
             <ul>
-            ${types.map((type) => `<li>${type}</li>`).join('')}
+                ${types.map((type) => `<li>${type}</li>`).join('')}
             </ul>
         `);
         $(".modal-title").html(`
             <h2>${response.data.name.toUpperCase()}</h2>
             <h5>${response.data.id}</h5>
-        `)
+        `);
+        console.log("Pokemon details button has been pressed.");
     });
 
     $("body").on("click", "numberedbuttons", async function (e) {
