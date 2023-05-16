@@ -1,6 +1,46 @@
 const PAGE_SIZE = 15;
 let currentPage = 1;
-let pokemons = []
+let pokemons = [];
+
+const updatePaginationDiv = (currentPage, numPages) => {
+    $("#pagination").empty();
+
+    const startPage = currentPage;
+    let endPage;
+    console.log(numPages);
+    if (currentPage * PAGE_SIZE >= pokemons.length) {
+        endPage = currentPage;
+    } else if (currentPage == numPages - 1 && (currentPage + 1) * PAGE_SIZE >= pokemons.length) {
+        endPage = currentPage + 1;
+    } else {
+        endPage = currentPage + 2;
+    }
+    if (currentPage > 1) {
+        $("#pagination").append(`
+            <button class='btn btn-primary page m1-1 numberedButtons' value='${currentPage - 1}'>Prev</button>
+        `);
+    }
+    for (let i = startPage - 2; i <= endPage; i++) {
+        if (i <= 0) {
+            i = 1;
+        }
+        $("#pagination").append(`
+            <button class='btn btn-primary page m1-1 numberedButtons' value='${i}'>${i}</button>
+        `);
+    }
+    if (currentPage < numPages) {
+        $("#pagination").append(`
+            <button class='btn btn-primary page m1-1 numberedButtons' value='${currentPage + 1}'>Next</button>
+        `);
+    }
+    for (let i = 1; i <= endPage; i++) {
+        let currentButton = document.getElementsByClassName("numberedButtons");
+        console.log("Current Page: " + currentPage + "\nCurrent Button: " + currentButton.item(i - 1).value);
+        if (currentButton.item(i - 1).value == currentPage) {
+            currentButton.item(i - 1).id = "currentPage";
+        }
+    }
+}
 
 const paginate = async (currentPage, PAGE_SIZE, pokemons) => {
     let selected_pokemons = pokemons.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
@@ -29,6 +69,7 @@ const setup = async () => {
 
     paginate(currentPage, PAGE_SIZE, pokemons);
     const numPages = Math.ceil(pokemons.length / PAGE_SIZE);
+    updatePaginationDiv(currentPage, numPages);
 
     $('body').on('click', '.pokecard', async function (e) {
         const pokemonName = $(this).attr('pokeName');
@@ -64,9 +105,12 @@ const setup = async () => {
         console.log("Pokemon details button has been pressed.");
     });
 
-    $("body").on("click", "numberedbuttons", async function (e) {
+    $("body").on("click", ".numberedButtons", async function (e) {
+        console.log("Page button has been pressed. Number: " + e.target.value);
         currentPage = Number(e.target.value);
         paginate(currentPage, PAGE_SIZE, pokemons);
+
+        updatePaginationDiv(currentPage, numPages);
     });
     
     document.getElementById("title").innerHTML = "Pokemon!";
