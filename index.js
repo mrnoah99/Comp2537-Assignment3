@@ -40,6 +40,9 @@ const updatePaginationDiv = (currentPage, numPages) => {
             currentButton.item(i - 1).id = "currentPage";
         }
     }
+    $("#pagination").append(`
+        <p style='margin-left: 40px; font-size=24pt;'>${(currentPage - 1) * PAGE_SIZE + 1}-${(currentPage) * PAGE_SIZE} of ${numPages * PAGE_SIZE} Pokemon</p>
+    `);
 }
 
 const paginate = async (currentPage, PAGE_SIZE, pokemons) => {
